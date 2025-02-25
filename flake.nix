@@ -8,7 +8,7 @@
       packages = lib.genAttrs (builtins.attrNames legacyPackages) (
         system:
         import ./default.nix {
-          pkgs = import nixpkgs { inherit system; };
+          pkgs = nixpkgs.legacyPackages.${system};
         }
       );
       defaultPackage = lib.mapAttrs (_: v: v.git-credential-gpg) self.packages;
