@@ -3,8 +3,14 @@
 }:
 
 {
-  git-credential-gpg =
-    with pkgs;
+  git-credential-gpg = pkgs.callPackage (
+    {
+      lib,
+      stdenvNoCC,
+      makeWrapper,
+      coreutils,
+      gnupg,
+    }:
     stdenvNoCC.mkDerivation {
       pname = "git-credential-gpg";
       version = "1.0.0";
@@ -21,5 +27,6 @@
             ]
           }
       '';
-    };
+    }
+  ) { };
 }
