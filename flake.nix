@@ -3,14 +3,21 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   outputs =
     { self, nixpkgs }:
-    with nixpkgs;
+    let
+      inherit (nixpkgs) lib;
+      support = _: pkgs: with pkgs.hostPlatform; isLinux || isDarwin;
+      systems = lib.attrNames (lib.filterAttrs support nixpkgs.legacyPackages);
+    in
     {
-      packages = lib.genAttrs (builtins.attrNames legacyPackages) (
+      packages = lib.genAttrs systems (
         system:
-        import ./default.nix {
-          pkgs = nixpkgs.legacyPackages.${system};
-        }
+        let
+          packages = import ./. { pkgs = nixpkgs.legacyPackages.${system}; };
+        in
+        packages // { default = packages.git-credential-gpg; }
       );
-      defaultPackage = lib.mapAttrs (_: v: v.git-credential-gpg) self.packages;
+      overlays = {
+        packages = _: pkgs: import ./. { inherit pkgs; };
+      };
     };
 }
