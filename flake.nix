@@ -5,7 +5,7 @@
     { self, nixpkgs }:
     let
       inherit (nixpkgs) lib;
-      support = _: pkgs: with pkgs.hostPlatform; isLinux || isDarwin;
+      support = _: pkgs: with pkgs.stdenv.hostPlatform; isLinux || isDarwin;
       systems = lib.attrNames (lib.filterAttrs support nixpkgs.legacyPackages);
     in
     {
